@@ -14,6 +14,8 @@ router.get('/', (req, res, next) => {
     pageTitle: 'Shop',
     path: '/',
     activeShop: true,
+    activeAddProduct: false,
+    formCSS: false,
     productCSS: true
   });
 });
