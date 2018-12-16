@@ -1,0 +1,21 @@
+<header class="main-header">
+    <nav class="main-header__nav">
+        <ul class="main-header__item-list">
+            <li class="main-header__item">
+                <% if (activeAddUser) { %>
+                <a class=active href="/">Add User</a>
+                <% } else { %>
+                <a href="/">Add User</a>
+                <% } %>
+            </li>
+            <li class="main-header__item">
+                <% if (activeUser) { %>
+                <a class=active href="/users">Show Users</a>
+                <% } else { %>
+                <a href="/users">Show Users</a>
+                <% } %>
+            </li>
+
+        </ul>
+    </nav>
+</header>
