@@ -4,6 +4,9 @@ exports.get404 = (req, res, next) => {
         formCSS: false,
         productCSS: false,
         activeShop: false,
-        activeAddProduct: false
+        activeAddProduct: false,
+        activeProducts: false,
+        activeCart: false,
+        activeAdminProduct: false
     });
 };
