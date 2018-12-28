@@ -10,6 +10,7 @@ exports.getAddProduct = (req, res, next) => {
         activeAddProduct: true,
         activeProducts: false,
         activeCart: false,
+        activeOrders: false,
         activeAdminProduct: false
     });
 };
@@ -35,9 +36,10 @@ exports.getProducts = (req, res, next) => {
             activeAddProduct: false,
             activeProducts: false,
             activeCart: false,
+            activeOrders: false,
             activeAdminProduct: true,
             formCSS: false,
-            productCSS: false
+            productCSS: true
         })
     );
 };

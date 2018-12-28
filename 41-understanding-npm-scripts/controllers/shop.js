@@ -1,23 +1,6 @@
 const Product = require('../models/product');
 
 
-exports.getProducts = (req, res, next) => {
-    Product.fetchAll(products =>
-        res.render('shop/product-list', {
-            prods: products,
-            pageTitle: 'All Products',
-            activeShop: false,
-            activeAddProduct: false,
-            activeProducts: true,
-            activeCart: false,
-            activeAdminProduct: false,
-            formCSS: false,
-            productCSS: true
-        })
-    );
-};
-
-
 exports.getIndex = (req, res, next) => {
     Product.fetchAll(products =>
         res.render('shop/index', {
@@ -27,13 +10,49 @@ exports.getIndex = (req, res, next) => {
             activeAddProduct: false,
             activeProducts: false,
             activeCart: false,
+            activeOrders: false,
             activeAdminProduct: false,
             formCSS: false,
-            productCSS: false
+            productCSS: true
         })
     );
 };
 
+
+exports.getProducts = (req, res, next) => {
+    Product.fetchAll(products =>
+        res.render('shop/product-list', {
+            prods: products,
+            pageTitle: 'All Products',
+            activeShop: false,
+            activeAddProduct: false,
+            activeProducts: true,
+            activeCart: false,
+            activeOrders: false,
+            activeAdminProduct: false,
+            formCSS: false,
+            productCSS: true
+        })
+    );
+};
+
+exports.getProduct = (req, res, next) => {
+    const prodId = req.params.productId;
+    Product.findById(prodId, product => {
+        res.render('shop/product-detail', {
+            pageTitle: product.title,
+            product: product,
+            activeShop: false,
+            activeAddProduct: false,
+            activeProducts: true,
+            activeCart: false,
+            activeOrders: false,
+            activeAdminProduct: false,
+            formCSS: false,
+            productCSS: false
+        });
+    });
+};
 
 exports.getCart = (req, res, next) => {
     res.render('shop/cart', {
@@ -42,6 +61,7 @@ exports.getCart = (req, res, next) => {
         activeAddProduct: false,
         activeProducts: false,
         activeCart: true,
+        activeOrders: false,
         activeAdminProduct: false,
         formCSS: false,
         productCSS: false
@@ -56,6 +76,22 @@ exports.getCheckout = (req, res, next) => {
         activeAddProduct: false,
         activeProducts: false,
         activeCart: false,
+        activeOrders: false,
+        activeAdminProduct: false,
+        formCSS: false,
+        productCSS: false
+    })
+};
+
+
+exports.getOrders = (req, res, next) => {
+    res.render('shop/orders', {
+        pageTitle: 'Your Orders',
+        activeShop: false,
+        activeAddProduct: false,
+        activeProducts: false,
+        activeCart: false,
+        activeOrders: true,
         activeAdminProduct: false,
         formCSS: false,
         productCSS: false

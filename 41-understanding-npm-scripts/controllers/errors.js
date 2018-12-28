@@ -7,6 +7,7 @@ exports.get404 = (req, res, next) => {
         activeAddProduct: false,
         activeProducts: false,
         activeCart: false,
+        activeOrders: false,
         activeAdminProduct: false
     });
 };

@@ -1,4 +1,6 @@
+<div class="backdrop"></div>
 <header class="main-header">
+    <button id="side-menu-toggle">Menu</button>
     <nav class="main-header__nav">
         <ul class="main-header__item-list">
             <li class="main-header__item">
@@ -11,6 +13,9 @@
                 <a class="<%= activeCart === true ? 'active' : '' %>" href="/cart">Cart</a>
             </li>
             <li class="main-header__item">
+                <a class="<%= activeOrders === true ? 'active' : '' %>" href="/orders">Orders</a>
+            </li>
+            <li class="main-header__item">
                 <a class="<%= activeAddProduct === true ? 'active' : '' %>" href="/admin/add-product">Add Product</a>
             </li>
             <li class="main-header__item">
@@ -19,3 +24,26 @@
         </ul>
     </nav>
 </header>
+
+<nav class="mobile-nav">
+    <ul class="mobile-nav__item-list">
+        <li class="mobile-nav__item">
+            <a class="<%= activeShop === true ? 'active' : '' %>" href="/">Shop</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="<%= activeProducts === true ? 'active' : '' %>" href="/products">Products</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="<%= activeCart === true ? 'active' : '' %>" href="/cart">Cart</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="<%= activeOrders === true ? 'active' : '' %>" href="/orders">Orders</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="<%= activeAddProduct === true ? 'active' : '' %>" href="/admin/add-product">Add Product</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="<%= activeAdminProduct === true ? 'active' : '' %>" href="/admin/products">Admin Products</a>
+        </li>
+    </ul>
+</nav>

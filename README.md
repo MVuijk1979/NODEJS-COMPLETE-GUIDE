@@ -1,0 +1,1 @@
+https://www.boekwinkeltjes.nl/boekwinkeltjes/images/book_stash.png
