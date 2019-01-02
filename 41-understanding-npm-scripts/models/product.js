@@ -7,7 +7,7 @@ const p = path.join(
     'products.json'
 );
 
-const getProductsFromFile = cb => {   
+const getProductsFromFile = cb => {
     fs.readFile(p, (err, fileContent) => {
         if (err) {
             return cb([]);
@@ -18,7 +18,8 @@ const getProductsFromFile = cb => {
 }
 
 module.exports = class Product {
-    constructor(title, imageUrl, price, description) {
+    constructor(id, title, imageUrl, description, price) {
+        this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
         this.description = description;
@@ -26,12 +27,26 @@ module.exports = class Product {
     }
 
     save() {
-        this.id = Math.random().toString();
         getProductsFromFile(products => {
-            products.push(this);
-            fs.writeFile(p, JSON.stringify(products), (err) => {
-                console.log(err);
-            });
+            if (this.id) {
+                // Search Existing Product Index 
+                const existingProductIndex = products.findIndex(prod => prod.id === this.id);
+                // Create a new array and copy the existing products in this new array
+                const updatedProducts = [...products];
+                // Update the existing Product with the index we have found 
+                updatedProducts[existingProductIndex] = this;
+                fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+                    console.log(err);
+                });
+            } else {
+                // Generate new id with Math function
+                this.id = Math.random().toString();
+                // Push the new Product to the array
+                products.push(this);
+                fs.writeFile(p, JSON.stringify(products), (err) => {
+                    console.log(err);
+                });
+            };
         });
     }
 
