@@ -56,26 +56,56 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    res.render('shop/cart', {
-        pageTitle: 'Your Cart',
-        activeShop: false,
-        activeAddProduct: false,
-        activeProducts: false,
-        activeCart: true,
-        activeOrders: false,
-        activeAdminProduct: false,
-        formCSS: false,
-        productCSS: false
-    })
+    // Get cart data
+    Cart.getCart(cart => {
+        // Get product data
+        Product.fetchAll(products => {
+            const cartProducts = [];
+            // Check if product is part of cart
+            for (product of products) {
+                const cartProductData = cart.products.find(prod => prod.id === product.id);
+                if (cartProductData) {
+                    // Save the product in the array
+                    // Save the quantity in the array
+                    cartProducts.push({productData: product, qty: cartProductData.qty});
+                }
+            }
+            res.render('shop/cart', {
+                pageTitle: 'Your Cart',
+                activeShop: false,
+                activeAddProduct: false,
+                activeProducts: false,
+                activeCart: true,
+                activeOrders: false,
+                activeAdminProduct: false,
+                formCSS: false,
+                productCSS: false,
+                products: cartProducts
+            });
+        });
+    });
 };
+
 
 exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findById(prodId, (product) => {
+    Product.findById(prodId, product => {
         Cart.addProduct(prodId, product.price);
     })
     res.redirect('/cart');
 };
+
+
+exports.postCartDeleteProduct = (req, res, next) => {
+    const prodId = req.body.productId;
+    // find product with id so that we also have the price for our next callback
+    Product.findById(prodId, product => {
+        // Delete product from the cart with id and price
+        Cart.deleteProduct(prodId, product.price);
+        res.redirect('/cart');
+    });
+};
+
 
 exports.getCheckout = (req, res, next) => {
     res.render('shop/checkout', {

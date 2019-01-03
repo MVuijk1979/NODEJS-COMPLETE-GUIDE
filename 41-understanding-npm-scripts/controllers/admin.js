@@ -2,7 +2,6 @@ const Product = require('../models/product');
 
 
 exports.getAddProduct = (req, res, next) => {
-    console.log('getAddProduct');
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         formCSS: true,
@@ -59,7 +58,7 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 
-// 
+// Edit Product
 exports.postEditProduct = (req, res, next) => {
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
@@ -74,6 +73,14 @@ exports.postEditProduct = (req, res, next) => {
         updatedPrice
     );
     updatedProduct.save();
+    res.redirect('/admin/products');
+};
+
+
+// Delete Product
+exports.postDeleteProduct = (req, res, next) => {
+    const prodId = req.body.productId;
+    Product.deleteById(prodId);
     res.redirect('/admin/products');
 };
 
