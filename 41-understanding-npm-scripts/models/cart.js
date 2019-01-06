@@ -56,6 +56,7 @@ module.exports = class Cart {
         };
         // Find the product to determine the quantity of the product in Cart
         const product = updatedCart.products.find(prod => prod.id === id);
+        // When there is no product then immediately return 
         if (!product) {
           return;
         }

@@ -3,56 +3,60 @@ const Cart = require('../models/cart');
 
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll(products =>
-        res.render('shop/index', {
-            prods: products,
-            pageTitle: 'Shop',
-            activeShop: true,
-            activeAddProduct: false,
-            activeProducts: false,
-            activeCart: false,
-            activeOrders: false,
-            activeAdminProduct: false,
-            formCSS: false,
-            productCSS: true
-        })
-    );
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+            res.render('shop/index', {
+                prods: rows,
+                pageTitle: 'Shop',
+                activeShop: true,
+                activeAddProduct: false,
+                activeProducts: false,
+                activeCart: false,
+                activeOrders: false,
+                activeAdminProduct: false,
+                formCSS: false,
+                productCSS: true
+            });
+        }).catch(err => console.log(err));
 };
 
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll(products =>
-        res.render('shop/product-list', {
-            prods: products,
-            pageTitle: 'All Products',
-            activeShop: false,
-            activeAddProduct: false,
-            activeProducts: true,
-            activeCart: false,
-            activeOrders: false,
-            activeAdminProduct: false,
-            formCSS: false,
-            productCSS: true
-        })
-    );
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+            res.render('shop/product-list', {
+                prods: rows,
+                pageTitle: 'All Products',
+                activeShop: false,
+                activeAddProduct: false,
+                activeProducts: true,
+                activeCart: false,
+                activeOrders: false,
+                activeAdminProduct: false,
+                formCSS: false,
+                productCSS: true
+            });
+        }).catch(err => console.log(err));
 };
+
 
 exports.getProduct = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.findById(prodId, product => {
-        res.render('shop/product-detail', {
-            pageTitle: product.title,
-            product: product,
-            activeShop: false,
-            activeAddProduct: false,
-            activeProducts: true,
-            activeCart: false,
-            activeOrders: false,
-            activeAdminProduct: false,
-            formCSS: false,
-            productCSS: false
-        });
-    });
+    Product.findById(prodId)
+        .then(([product]) => {
+            res.render('shop/product-detail', {
+                pageTitle: product.title,
+                product: product[0],
+                activeShop: false,
+                activeAddProduct: false,
+                activeProducts: true,
+                activeCart: false,
+                activeOrders: false,
+                activeAdminProduct: false,
+                formCSS: false,
+                productCSS: false
+            });
+        }).catch(err => console.log(err)); 
 };
 
 exports.getCart = (req, res, next) => {
@@ -67,7 +71,10 @@ exports.getCart = (req, res, next) => {
                 if (cartProductData) {
                     // Save the product in the array
                     // Save the quantity in the array
-                    cartProducts.push({productData: product, qty: cartProductData.qty});
+                    cartProducts.push({
+                        productData: product,
+                        qty: cartProductData.qty
+                    });
                 }
             }
             res.render('shop/cart', {

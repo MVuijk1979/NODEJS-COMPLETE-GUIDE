@@ -25,8 +25,12 @@ exports.postAddProduct = (req, res, next) => {
     // Create a new Product where Id is set to null
     // Id will receive a value in the model product functions
     const product = new Product(null, title, imageUrl, description, price);
-    product.save();
-    res.redirect('/');
+    product
+        .save()
+        .then(() => {
+            res.redirect('/');
+        })
+        .catch(err => console.log(err));
 };
 
 
