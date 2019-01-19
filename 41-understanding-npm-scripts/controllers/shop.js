@@ -65,46 +65,63 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  // Get cart data
-  Cart.getCart(cart => {
-    // Get product data
-    Product.fetchAll(products => {
-      const cartProducts = [];
-      // Check if product is part of cart
-      for (product of products) {
-        const cartProductData = cart.products.find(prod => prod.id === product.id);
-        if (cartProductData) {
-          // Save the product in the array
-          // Save the quantity in the array
-          cartProducts.push({
-            productData: product,
-            qty: cartProductData.qty
+  req.user
+    .getCart()
+    .then(cart => {
+      return cart
+        .getProducts()
+        .then(products => {
+          res.render('shop/cart', {
+            pageTitle: 'Your Cart',
+            activeShop: false,
+            activeAddProduct: false,
+            activeProducts: false,
+            activeCart: true,
+            activeOrders: false,
+            activeAdminProduct: false,
+            formCSS: false,
+            productCSS: false,
+            products: products
           });
-        }
-      }
-      res.render('shop/cart', {
-        pageTitle: 'Your Cart',
-        activeShop: false,
-        activeAddProduct: false,
-        activeProducts: false,
-        activeCart: true,
-        activeOrders: false,
-        activeAdminProduct: false,
-        formCSS: false,
-        productCSS: false,
-        products: cartProducts
-      });
-    });
-  });
+        })
+        .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 };
 
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, product => {
-    Cart.addProduct(prodId, product.price);
+  let fetchedCart;
+  req.user
+  .getCart()
+  .then(cart => {
+    fetchedCart = cart;
+    return cart.getProducts({ where: { id: prodId } });
   })
-  res.redirect('/cart');
+  .then(products => {
+    let product;
+    if (products.length > 0 ) {
+      product = products[0]
+    }
+    let newQuantity = 1;
+    if (product){
+      //...
+    }
+    return Product
+      .findByPk(prodId)
+      .then(product => {
+        return fetchedCart
+          .addProduct(product, { 
+            through: { quantity: newQuantity } 
+          });
+      })
+      .catch(err => console.log(err));
+  })
+  .then(() => {
+    res.redirect('/cart');
+  })
+  .catch(err => console.log(err));
 };
 
 
