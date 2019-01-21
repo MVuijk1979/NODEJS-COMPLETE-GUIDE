@@ -6,6 +6,7 @@ exports.getAddProduct = (req, res, next) => {
         pageTitle: 'Add Product',
         formCSS: true,
         productCSS: true,
+        cartCSS: false,
         activeShop: false,
         activeAddProduct: true,
         activeProducts: false,
@@ -59,6 +60,7 @@ exports.getEditProduct = (req, res, next) => {
       pageTitle: 'Edit Product',
       formCSS: true,
       productCSS: true,
+      cartCSS: false,
       activeShop: false,
       activeAddProduct: false,
       activeProducts: false,
@@ -128,6 +130,7 @@ exports.getProducts = (req, res, next) => {
         activeOrders: false,
         activeAdminProduct: true,
         formCSS: false,
+        cartCSS: false,
         productCSS: true
       });
     })

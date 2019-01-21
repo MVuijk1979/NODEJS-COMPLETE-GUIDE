@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const Cart = require('../models/cart');
 
 // Read all Products from the Database
 exports.getIndex = (req, res, next) => {
@@ -16,7 +15,8 @@ exports.getIndex = (req, res, next) => {
         activeOrders: false,
         activeAdminProduct: false,
         formCSS: false,
-        productCSS: true
+        productCSS: true,
+        cartCSS: false
       });
     })
     .catch(err => console.log(err));
@@ -37,11 +37,13 @@ exports.getProducts = (req, res, next) => {
         activeOrders: false,
         activeAdminProduct: false,
         formCSS: false,
+        cartCSS: false,
         productCSS: true
       });
     })
     .catch(err => console.log(err));
 };
+
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
@@ -58,11 +60,13 @@ exports.getProduct = (req, res, next) => {
         activeOrders: false,
         activeAdminProduct: false,
         formCSS: false,
+        cartCSS: false,
         productCSS: false
       });
     })
     .catch(err => console.log(err));
 };
+
 
 exports.getCart = (req, res, next) => {
   req.user
@@ -79,6 +83,7 @@ exports.getCart = (req, res, next) => {
             activeCart: true,
             activeOrders: false,
             activeAdminProduct: false,
+            cartCSS: true,
             formCSS: false,
             productCSS: false,
             products: products
@@ -93,6 +98,7 @@ exports.getCart = (req, res, next) => {
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   let fetchedCart;
+  let newQuantity = 1;
   req.user
   .getCart()
   .then(cart => {
@@ -102,21 +108,21 @@ exports.postCart = (req, res, next) => {
   .then(products => {
     let product;
     if (products.length > 0 ) {
-      product = products[0]
+      product = products[0];
     }
-    let newQuantity = 1;
-    if (product){
-      //...
+
+    if (product) {
+      const oldQuantity = product.cartItem.quantity;
+      newQuantity = oldQuantity + 1;
+      return product;
     }
-    return Product
-      .findByPk(prodId)
-      .then(product => {
-        return fetchedCart
-          .addProduct(product, { 
-            through: { quantity: newQuantity } 
-          });
-      })
-      .catch(err => console.log(err));
+    return Product.findByPk(prodId);
+  })
+  .then(product => {
+    return fetchedCart
+      .addProduct(product, { 
+        through: { quantity: newQuantity } 
+    });
   })
   .then(() => {
     res.redirect('/cart');
@@ -125,42 +131,72 @@ exports.postCart = (req, res, next) => {
 };
 
 
+/* Delete Product Item from Cart */
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  // find product with id so that we also have the price for our next callback
-  Product.findById(prodId, product => {
-    // Delete product from the cart with id and price
-    Cart.deleteProduct(prodId, product.price);
-    res.redirect('/cart');
-  });
+  req.user
+    .getCart()
+    .then(cart => {
+      return cart.getProducts({ where: { id: prodId } });
+    })
+    .then(products => {
+      const product = products[0];
+      return product.cartItem.destroy();
+    })
+    .then(result => {
+      res.redirect('/cart');
+    })
+    .catch(err => console.log(err));
 };
 
 
-exports.getCheckout = (req, res, next) => {
-  res.render('shop/checkout', {
-    pageTitle: 'Checkout',
-    activeShop: false,
-    activeAddProduct: false,
-    activeProducts: false,
-    activeCart: false,
-    activeOrders: false,
-    activeAdminProduct: false,
-    formCSS: false,
-    productCSS: false
-  })
+exports.postOrder = (req, res, next) => {
+  let fetchedCart;
+  req.user
+    .getCart()
+    .then(cart => {
+      fetchedCart = cart;
+      return cart.getProducts();
+    })
+    .then(products => {
+      return req.user
+        .createOrder()
+        .then(order => {
+          return order.addProducts(
+            products.map(product => {
+              product.orderItem = { quantity: product.cartItem.quantity };
+              return product;
+            })
+          );
+        })
+        .catch(err => console.log(err));
+    })
+    .then(result => {
+      return fetchedCart.setProducts(null);
+    })
+    .then(result => res.redirect('/orders'))
+    .catch(err => console.log(err));
 };
 
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    pageTitle: 'Your Orders',
-    activeShop: false,
-    activeAddProduct: false,
-    activeProducts: false,
-    activeCart: false,
-    activeOrders: true,
-    activeAdminProduct: false,
-    formCSS: false,
-    productCSS: false
-  })
+  /* Magic Method by Sequelize created because of associations: getOrders */
+  req.user
+    .getOrders({ include: ['products'] })
+    .then(orders => {
+      res.render('shop/orders', {
+        pageTitle: 'Your Orders',
+        orders: orders,
+        activeShop: false,
+        activeAddProduct: false,
+        activeProducts: false,
+        activeCart: false,
+        activeOrders: true,
+        activeAdminProduct: false,
+        formCSS: false,
+        cartCSS: false,
+        productCSS: false
+      })
+    })
+    .catch(err => console.log(err));
 };

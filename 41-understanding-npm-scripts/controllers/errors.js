@@ -3,6 +3,7 @@ exports.get404 = (req, res, next) => {
         pageTitle: 'Page Not Found',
         formCSS: false,
         productCSS: false,
+        cartCSS: false,
         activeShop: false,
         activeAddProduct: false,
         activeProducts: false,
